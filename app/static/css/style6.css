@@ -1,0 +1,17 @@
+.piti {
+    display: flex;
+    grid-template-columns: repeat(suto-fill, 240px);
+    padding: 50px;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 100px;
+    margin-right: 100px;
+    padding: 20%
+}
+.piti img {
+    height: 150px;
+    align-items: center;
+}
+h3 {
+    justify-content:space-around;
+}

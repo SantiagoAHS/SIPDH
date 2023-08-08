@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fijo.css')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-family: 'Quicksand', sans-serif;
+        }
+      </style>
+    <title>admin</title>
+</head>
+<body>
+    <header>
+        <a href="{{ url_for('home.inicio') }}" class="Logo">
+            <img src="{{ url_for('static', filename='Logo_DH.png') }}" alt="Logo DH" class="LDH" class="logo-img" width="100px" >
+            <h2 class="logo_nombre">Deposito Huerta</h2>
+        </a>
+    </header>
+<h3>Privacidad</h3>
+    <h4>Nuestra política de privacidad describe cómo recopilamos, utilizamos y protegemos la información personal que recopilamos a través de la aplicación web. Al utilizar nuestra aplicación web, aceptas nuestra política de privacidad.</h4>
+    <p style="padding: 200px;"></p>
+
+    <br>
+    <footer>
+        <nav class="F2">
+            <a href="{{ url_for('extras.terminos')}}" class="nav-link" style="color: aliceblue;">Terminos y Condiciones</a>
+            <a href="{{ url_for('extras.politicas')}}" class="nav-link" style="color: aliceblue;">Politicas de Privacidad</a>
+        </nav>
+    </footer>
+
+</body>
+</html>

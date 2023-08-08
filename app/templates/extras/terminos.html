@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fijo.css')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-family: 'Quicksand', sans-serif;
+        }
+      </style>
+    <title>admin</title>
+</head>
+<body>
+    <header>
+        <a href="{{ url_for('home.inicio') }}" class="Logo">
+            <img src="{{ url_for('static', filename='Logo_DH.png') }}" alt="Logo DH" class="LDH" class="logo-img" width="100px" >
+            <h2 class="logo_nombre">Deposito Huerta</h2>
+        </a>
+    </header>
+
+<h2>Términos y Condiciones de Uso para la Aplicación Web del Depósito</h2>
+<h4>Bienvenido/a a nuestra aplicación web de Inventario para Depósito Huerta. Antes de utilizar nuestra plataforma, te pedimos que leas y aceptes los siguientes términos y condiciones de uso. Al acceder y utilizar nuestra aplicación web, aceptas cumplir con estos términos y condiciones en su totalidad. Si no estás de acuerdo con alguno de estos términos, te recomendamos que no utilices nuestra aplicación.</h4>
+<h3>Uso de la Aplicación</h3>
+<h4>a. Nuestra aplicación web de Inventario para Depósito Huerta está diseñada para permitir a los usuarios realizar el seguimiento de inventario, gestionar y controlar los productos almacenados en el depósito. El sistema de inventario se proporciona como una herramienta en línea para facilitar la gestión y seguimiento de inventarios. Toda la información y contenido disponible a través de Inventario se proporciona únicamente con fines informativos y no constituye asesoramiento comercial, financiero o profesional de ningún tipo. El uso de Inventario implica que aceptas utilizarlo bajo tu propia responsabilidad y discreción.</h4>
+<h4>b. Te comprometes a utilizar la aplicación web únicamente para los fines previstos y de acuerdo con todas las leyes y regulaciones aplicables. Al crear una cuenta y utilizar inventario, eres responsable de mantener la confidencialidad de tu información de inicio de sesión y de todas las actividades que ocurran bajo tu cuenta. Te comprometes a utilizar inventario de manera legal y ética, respetando todas las leyes y regulaciones aplicables.</h4>
+<h3>Registro de Usuario</h3>
+<h4>a. Para acceder a nuestra aplicación web, es posible que debas registrarte y crear una cuenta de usuario. Todos los derechos de propiedad intelectual, incluyendo derechos de autor, marcas comerciales, nombres comerciales y logotipos relacionados con el sistema de inventario y su contenido, son propiedad exclusiva de la empresa o sus licenciantes. Estos derechos protegen el software, diseño, interfaces de usuario, bases de datos y cualquier otro elemento relacionado</h4>
+<h4>b. Al registrarte, aceptas proporcionar información precisa y actualizada. Eres responsable de mantener la confidencialidad de tu cuenta y contraseña, y aceptas ser responsable de todas las actividades que ocurran bajo tu cuenta. No se permite la reproducción, distribución, modificación o explotación del contenido del sistema de inventario sin previo consentimiento por escrito de la empresa. Está prohibido el uso no autorizado de marcas comerciales, logotipos o cualquier otro elemento protegido por derechos de propiedad intelectual asociado a la empresa.</h4>
+<h3>Propiedad Intelectual</h3>
+<h4>a. Nuestra aplicación web del depósito y todo su contenido, incluyendo pero no limitado a textos, gráficos, logotipos, iconos, imágenes, clips de audio, descargas digitales y software, son propiedad exclusiva nuestra o de nuestros licenciantes y están protegidos por leyes de propiedad intelectual.</h4>
+<h4>b. No se te otorga ningún derecho de propiedad intelectual sobre la aplicación web ni su contenido, excepto para el uso personal y no comercial como se describe en estos términos y condiciones.</h4>
+<h3>Responsabilidad del Usuario</h3>
+<h4>a. Eres responsable de garantizar la precisión de la información que ingresas en la aplicación web.</h4>
+<h4>b. No podrás utilizar la aplicación web para almacenar, transmitir o compartir contenido ilegal, ofensivo, difamatorio o que viole los derechos de terceros.</h4>
+<h3>Limitación de Responsabilidad</h3>
+<h4>a. Aunque nos esforzamos por proporcionar una aplicación web confiable y segura, no garantizamos la disponibilidad continua o libre de errores de la plataforma.</h4>
+<h4>b. No seremos responsables de ningún daño directo, indirecto, incidental, especial o consecuente que surja del uso o la imposibilidad de uso de la aplicación web.</h4>
+<h3>Modificaciones</h3>
+<h4>Nos reservamos el derecho de modificar, suspender o interrumpir cualquier aspecto de la aplicación web en cualquier momento sin previo aviso.</h4>
+<h3>Ley Aplicable y Jurisdicción</h3>
+<h4>Estos términos y condiciones se regirán e interpretarán de acuerdo con las leyes del [país/jurisdicción] y cualquier disputa relacionada con estos términos estará sujeta a la jurisdicción exclusiva de los tribunales de [ciudad, país/jurisdicción].</h4>
+<h4>Al utilizar nuestra aplicación web del Depósito Huerta, aceptas estos términos y condiciones en su totalidad. Si no estás de acuerdo con alguno de estos términos, te recomendamos que no utilices nuestra aplicación. Gracias por tu comprensión y bienvenido/a a nuestra plataforma.</h4>
+<h4 style="color: #ffffff;">En caso de bugs o fallos la empresa no se hace responsable, pero Diego Alonso Romero Hernandez sí.</h4>
+
+    <br>
+    <footer>
+        <nav class="F2">
+            <a href="{{ url_for('extras.terminos')}}" class="nav-link" style="color: aliceblue;">Terminos y Condiciones</a>
+            <a href="{{ url_for('extras.politicas')}}" class="nav-link" style="color: aliceblue;">Politicas de Privacidad</a>
+        </nav>
+    </footer>
+
+</body>
+</html>
