@@ -115,7 +115,7 @@
         <button type="submit" class="btn btn-primary ml-2">Buscar</button>
     </form>
     <!-- Fin del formulario de búsqueda -->
-<h2 >LISTA DE PROVEDORES<button class="btn btn-primary float-right" data-toggle="modal" data-target="#myModal">AGREGAR PROVEDOR</button></h2>
+<h2 >LISTA DE PROVEEDORES<button class="btn btn-primary float-right" data-toggle="modal" data-target="#myModal">AGREGAR PROVEDOR</button></h2>
 
 {%with messages = get_flashed_messages()%}
 {%if messages%}
@@ -154,6 +154,11 @@
                         </div>
 
                         <div class="form-group">
+                            <label>DIRECCION</label>
+                            <input name="direccion" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA DIRECCION">
+                          </div>
+
+                        <div class="form-group">
                             <label>TELEFONO</label>
                             <input type="text" name="telefono" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA TELEFONO">
                         </div>
@@ -163,10 +168,6 @@
                             <input name="correo" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA CORREO">
                           </div>
 
-                        <div class="form-group">
-                            <label>DIRECCION</label>
-                            <input name="direccion" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA DIRECCION">
-                          </div>
 
                           <button type="submit" class="btn btn-primary mb-2">GUARDAR</button>
                      
@@ -190,10 +191,10 @@
         <tr>
             <th scope="col">ID</th>
             <th scope="col">NOMBRE</th>
+            <th scope="col">DIRECCION</th>
             <th scope="col">TELEFONO</th>
             <th scope="col">CORREO</th>
-            <th scope="col">DIRECCION</th>
-            <th scope="col">Action</th>
+            <th scope="col">Accion</th>
         </tr>
     </thead>
     <tbody>
@@ -228,32 +229,32 @@
                     <div class="modal-body">
                         
                         <form action="{{ url_for('update_pe')}}" method="POST">
-                            <input type="hidden" name="id_provedor" value="{{row.0}}">
+                            <input type="hidden" name="id_proveedor" value="{{row.0}}">
                             <div class="form-group">
                                 <label>NOMBRE</label>
                                 <input value="{{row.1}}" type="text" name="nombre" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA NOMBRE">
                               </div>
-      
-                              <div class="form-group">
-                                  <label>TELEFONO</label>
-                                  <input value="{{row.2}}" type="text" name="telefono" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA TELEFONO">
-                              </div>
-      
-                              <div class="form-group">
-                                  <label>CORREO</label>
-                                  <input value="{{row.3}}" name="correo" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA CORREO">
-                                </div>
-      
+
                               <div class="form-group">
                                   <label>DIRECCION</label>
-                                  <input value="{{row.4}}" name="direccion" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA DIRECCION">
+                                  <input value="{{row.2}}" name="direccion" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA DIRECCION">
                                 </div>
-        
+
+                              <div class="form-group">
+                                  <label>CORREO</label>
+                                  <input value="{{row.4}}" name="correo" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA CORREO">
+                                </div>
+
+                                
+                                <div class="form-group">
+                                    <label>TELEFONO</label>
+                                    <input value="{{row.3}}" type="text" name="telefono" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA TELEFONO">
+                                </div>
+                                
+      
                               <button type="submit" class="btn btn-success mb-2">ACTUALIZAR</button>
                          
                           </form>
-    
-    
                     </div>
                 </div>
             </div>

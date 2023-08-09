@@ -40,7 +40,7 @@ def login():
 
         # Consultar la base de datos para verificar las credenciales
         cur = mysql.connection.cursor()
-        cur.execute("SELECT id_empleado, nombre, contraseña, rol FROM empleado WHERE nombre = %s", (nombre_usuario,))
+        cur.execute("SELECT id_empleado, nombre, contraseña, rol FROM empleados WHERE nombre = %s", (nombre_usuario,))
         usuario = cur.fetchone()
         cur.close()
 
@@ -206,7 +206,7 @@ def empleado():
 
         # Consultar la base de datos para obtener los empleados que coincidan con el término de búsqueda
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM empleado WHERE nombre LIKE %s", ('%' + search_term + '%',))
+        cur.execute("SELECT * FROM empleados WHERE nombre LIKE %s", ('%' + search_term + '%',))
         data = cur.fetchall()
         cur.close()
 
@@ -214,7 +214,7 @@ def empleado():
 
     # Si la solicitud es GET, mostrar todos los empleados sin filtrar
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM empleado")
+    cur.execute("SELECT * FROM empleados")
     data = cur.fetchall()
     cur.close()
 
@@ -230,9 +230,10 @@ def insert_e():
         direccion= request.form['direccion']
         curp= request.form['curp']
         contraseña= request.form['contraseña']
+        rol=request.form['rol']
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO empleado (nombre,telefono,correo,direccion,curp,contraseña) VALUES (%s, %s, %s, %s, %s, %s)", 
-                    (nombre,telefono,correo,direccion,curp,contraseña))
+        cur.execute("INSERT INTO empleados (nombre,telefono,correo,direccion,curp,contraseña,rol) VALUES (%s, %s, %s, %s, %s, %s,%s)", 
+                    (nombre,telefono,correo,direccion,curp,contraseña,rol))
         mysql.connection.commit()
         return redirect(url_for('empleado'))
 
@@ -240,7 +241,7 @@ def insert_e():
 def delete_e(id_data):
     flash("Record Has Been Deleted Successfully")
     cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM empleado WHERE id_empleado=%s", (id_data,))
+    cur.execute("DELETE FROM empleados WHERE id_empleado=%s", (id_data,))
     mysql.connection.commit()
     return redirect(url_for('empleado'))
 
@@ -253,9 +254,10 @@ def update_e():
         direccion= request.form['direccion']
         curp= request.form['curp']
         contraseña= request.form['contraseña']
+        rol=request.form['rol']
         cur = mysql.connection.cursor()
-        cur.execute("UPDATE empleado SET nombre=%s,telefono=%s ,correo=%s,direccion=%s ,curp=%s ,contraseña=%s WHERE id_empleado=%s",
-                    (nombre,telefono,correo,direccion,curp,contraseña,id_data,))
+        cur.execute("UPDATE empleados SET nombre=%s,telefono=%s ,correo=%s,direccion=%s ,curp=%s ,contraseña=%s, rol=%s WHERE id_empleado=%s",
+                    (nombre,telefono,correo,direccion,curp,contraseña,rol,id_data,))
         flash("Data Updated Successfully")
         mysql.connection.commit()
         return redirect(url_for('empleado'))
@@ -269,7 +271,7 @@ def provedor():
         
         # Consultar la base de datos para obtener los proveedores que coincidan con el término de búsqueda
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM provedor WHERE nombre LIKE %s", ('%' + search_term + '%',))
+        cur.execute("SELECT * FROM proveedores WHERE nombre LIKE %s", ('%' + search_term + '%',))
         data = cur.fetchall()
         cur.close()
 
@@ -277,7 +279,7 @@ def provedor():
 
     # Si la solicitud es GET, mostrar todos los proveedores sin filtrar
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM provedor")
+    cur.execute("SELECT * FROM proveedores")
     data = cur.fetchall()
     cur.close()
 
@@ -288,12 +290,12 @@ def insert_pe():
     if request.method == "POST":
         flash("Data Inserted Successfully")
         nombre= request.form['nombre']
+        direccion= request.form['direccion']
         telefono= request.form['telefono']
         correo= request.form['correo']
-        direccion= request.form['direccion']
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO provedor (nombre,telefono,correo,direccion) VALUES (%s, %s, %s, %s)", 
-                    (nombre,telefono,correo,direccion))
+        cur.execute("INSERT INTO proveedores (nombre, direccion, telefono, correo) VALUES (%s, %s, %s, %s)",
+            (nombre, direccion, telefono, correo))
         mysql.connection.commit()
         return redirect(url_for('provedor'))
 
@@ -301,23 +303,23 @@ def insert_pe():
 def delete_pe(id_data):
     flash("Record Has Been Deleted Successfully")
     cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM provedor WHERE id_provedor=%s", (id_data,))
+    cur.execute("DELETE FROM proveedores WHERE id_proveedor=%s", (id_data,))
     mysql.connection.commit()
     return redirect(url_for('provedor'))
 
-@app.route('/update_pe', methods= ['POST'])
+@app.route('/update_pe', methods=['POST'])
 def update_pe():
-        id_data= request.form['id_provedor']
-        nombre= request.form['nombre']
-        telefono= request.form['telefono']
-        correo= request.form['correo']
-        direccion = request.form['direccion']
-        cur = mysql.connection.cursor()
-        cur.execute("UPDATE provedor SET nombre=%s ,telefono=%s ,correo=%s, direccion=%s WHERE id_provedor=%s",
-                    (nombre,telefono,correo,direccion,id_data,))
-        flash("Data Updated Successfully")
-        mysql.connection.commit()
-        return redirect(url_for('provedor'))
+    id_data = request.form['id_proveedor']
+    nombre = request.form['nombre']
+    telefono = request.form['telefono']
+    correo = request.form['correo']
+    direccion = request.form['direccion']
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE proveedores SET nombre=%s, direccion=%s, telefono=%s, correo=%s WHERE id_proveedor=%s",
+                (nombre, direccion, telefono, correo, id_data,))
+    flash("Data Updated Successfully")
+    mysql.connection.commit()
+    return redirect(url_for('provedor'))
 
 #Categoria
 @app.route('/categoria', methods=['GET', 'POST'])

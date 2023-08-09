@@ -180,6 +180,11 @@
                             <input name="contraseña" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA CONTRASEÑA">
                           </div>
 
+                          <div class="form-group">
+                            <label>ROL</label>
+                            <input name="rol" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA ROL">
+                          </div>
+
                           <button type="submit" class="btn btn-primary mb-2">GUARDAR</button>
                      
                       </form>
@@ -206,8 +211,8 @@
             <th scope="col">CORREO</th>
             <th scope="col">DIRECCION</th>
             <th scope="col">CURP</th>
-            <th scope="col">CONTRASEÑA</th>
-            <th scope="col">Action</th>
+            <th scope="col">ROL</th>
+            <th scope="col">Accion</th>
         </tr>
     </thead>
     <tbody>
@@ -219,7 +224,7 @@
         <td>{{row.3}}</td>
         <td>{{row.4}}</td>
         <td>{{row.5}}</td>
-        <td>{{row.6}}</td>
+        <td>{{row.7}}</td>
         <td>
             <a href="/update/{{row.0}}" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modaledit{{row.0}}">Editar</a>
             <a href="/delete_e/{{ row.0 }}" onclick="return confirm('Are Sure Want To Deleted ?')" class="btn btn-danger btn-sm">Borrar</a>
@@ -252,27 +257,32 @@
       
                               <div class="form-group">
                                   <label>TELEFONO</label>
-                                  <input value="{{row.2}}" type="text" name="telefono" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA PRECIO">
+                                  <input value="{{row.2}}" type="text" name="telefono" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA EL TELEFONO">
                               </div>
       
                               <div class="form-group">
                                   <label>CORREO</label>
-                                  <input value="{{row.3}}" name="correo" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA CANTIDAD DE STOCK">
+                                  <input value="{{row.3}}" name="correo" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA EL CORREO">
                                 </div>
       
                               <div class="form-group">
                                   <label>DIRECCION</label>
-                                  <input value="{{row.4}}" name="direccion" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA DESCRIPCION">
+                                  <input value="{{row.4}}" name="direccion" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA DIRECCION">
                                 </div>
       
                               <div class="form-group">
                                   <label>CURP</label>
-                                  <input value="{{row.5}}" name="curp" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA LA CADOCIDAD">
+                                  <input value="{{row.5}}" name="curp" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA EL CURP">
                                 </div>
       
                               <div class="form-group">
                                   <label>CONTRASEÑA</label>
-                                  <input value="{{row.6}}" name="contraseña" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA LA ID DEL PROVEDOR">
+                                  <input value="{{row.6}}" name="contraseña" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA LA CONTRAENIA">
+                                </div>
+
+                                <div class="form-group">
+                                  <label>ROL</label>
+                                  <input value="{{row.7}}" name="rol" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA EL ROL">
                                 </div>
           
                               <button type="submit" class="btn btn-success mb-2">ACTUALIZAR</button>
