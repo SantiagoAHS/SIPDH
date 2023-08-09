@@ -10,7 +10,20 @@
             font-family: 'Poppins', sans-serif;
             font-family: 'Quicksand', sans-serif;
         }
-      </style>
+        .pdf-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .pdf-button-generar {
+            background-color: #27ae60;
+        }
+    </style>
     <title>admin</title>
 </head>
 <body>
@@ -35,16 +48,27 @@
             <li><a href="{{ url_for('reporte') }}">Reportes</a></li>
         </ul>
     </nav>
-<h1>Administrador</h1>
-<h2>¿Que reporte quieres solicitar?</h2>
+    <h1>Administrador</h1>
+    <h2>¿Qué reporte quieres solicitar?</h2>
+    
+    <div style="display: flex; justify-content:center;">
+        <form action="{{ url_for('generar_pdf_productos') }}" method="GET">
+            <button type="submit" class="pdf-button">Generar Reporte Productos</button>
+        </form>
+    
+        <form action="{{ url_for('generar_pdf_ventas') }}" method="POST">
+            <label for="fecha_inicio">Fecha:</label>
+            <input type="date" id="fecha_inicio" name="fecha_inicio" required>
+            <button type="submit" class="pdf-button pdf-button-generar">Generar Reporte Ventas</button>
+        </form>
+    </div>
 
     <br>
     <footer>
         <nav class="F2">
-            <a href="{{ url_for('extras.terminos')}}" class="nav-link" style="color: aliceblue;">Terminos y Condiciones</a>
-            <a href="{{ url_for('extras.politicas')}}" class="nav-link" style="color: aliceblue;">Politicas de Privacidad</a>
+            <a href="{{ url_for('extras.terminos')}}" class="nav-link" style="color: aliceblue;">Términos y Condiciones</a>
+            <a href="{{ url_for('extras.politicas')}}" class="nav-link" style="color: aliceblue;">Políticas de Privacidad</a>
         </nav>
     </footer>
-
 </body>
 </html>

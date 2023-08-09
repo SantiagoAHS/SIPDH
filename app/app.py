@@ -3,6 +3,12 @@ from flask_mysqldb import MySQL
 from flask_paginate import Pagination
 from datetime import datetime
 import mysql.connector
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from io import BytesIO
+from flask import Response
 
 
 from views.error_views import error_views
@@ -30,6 +36,86 @@ app.register_blueprint(extra_views)
 def reporte():
     return render_template('extras/reportes.html')
 
+@app.route('/generar_pdf_productos', methods=['GET'])
+def generar_pdf_productos():
+    # Consulta a la base de datos para obtener los datos de productos
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id_producto, nombre, precio, stock, descripcion, fecha_caducidad, categoria, proveedor FROM productos")
+    productos_data = cur.fetchall()
+    
+    # Crear un objeto PDF
+    pdf_buffer = BytesIO()
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
+    
+    # Contenido del PDF
+    story = []
+    styles = getSampleStyleSheet()
+    story.append(Paragraph("Reporte de Productos", styles['Title']))
+    story.append(Spacer(1, 12))
+    
+    # Crear una tabla con los datos de productos
+    data = [['ID', 'Nombre', 'Precio', 'Stock', 'Descripción', 'Fecha Caducidad', 'Categoría', 'Proveedor']]
+    data.extend(productos_data)
+    
+    table = Table(data)
+    table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                               ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                               ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                               ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                               ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                               ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                               ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+    story.append(table)
+    
+    # Construir el PDF y guardar en el objeto BytesIO
+    doc.build(story)
+    
+    # Regresar el archivo PDF como descarga
+    pdf_buffer.seek(0)
+    return Response(pdf_buffer, mimetype='application/pdf', headers={'Content-Disposition': 'attachment; filename=reporte_productos.pdf'})
+
+
+
+@app.route('/generar_pdf_ventas', methods=['POST'])
+def generar_pdf_ventas():
+    fecha_inicio = request.form.get('fecha_inicio')
+
+    # Consulta a la base de datos para obtener los datos de ventas
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id_venta, fecha_venta, cantidad_prod, total, nombre_empleado FROM venta WHERE fecha_venta >= %s", (fecha_inicio,))
+    ventas_data = cur.fetchall()
+
+    # Crear un objeto PDF
+    pdf_buffer = BytesIO()
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
+
+    # Contenido del PDF
+    story = []
+    styles = getSampleStyleSheet()
+    story.append(Paragraph("Reporte de Ventas", styles['Title']))
+    story.append(Paragraph(f"Fecha de inicio: {fecha_inicio}", styles['Normal']))
+    story.append(Spacer(1, 12))
+
+    # Crear una tabla con los datos de ventas
+    data = [['ID Venta', 'Fecha Venta', 'Cantidad Producto', 'Total', 'Nombre Empleado']]
+    data.extend(ventas_data)
+
+    table = Table(data)
+    table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                               ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                               ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                               ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                               ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                               ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                               ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+    story.append(table)
+
+    # Construir el PDF y guardar en el objeto BytesIO
+    doc.build(story)
+
+    # Regresar el archivo PDF como descarga
+    pdf_buffer.seek(0)
+    return Response(pdf_buffer, mimetype='application/pdf', headers={'Content-Disposition': 'attachment; filename=reporte_ventas.pdf'})
 #login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -129,7 +215,7 @@ def productos():
 
         # Consultar la base de datos para obtener los productos que coincidan con el término de búsqueda
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM producto WHERE nombre LIKE %s", ('%' + search_term + '%',))
+        cur.execute("SELECT * FROM productos WHERE nombre LIKE %s", ('%' + search_term + '%',))
         data = cur.fetchall()
         cur.close()
 
@@ -143,7 +229,7 @@ def productos():
 
     # Si la solicitud es GET, mostrar todos los productos sin filtrar
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM producto")
+    cur.execute("SELECT * FROM productos")
     data = cur.fetchall()
     cur.close()
 
@@ -163,12 +249,12 @@ def insert_po():
         precio= request.form['precio']
         stock= request.form['stock']
         descripcion= request.form['descripcion']
-        fecha_cad= request.form['fecha_cad']
-        id_provedor= request.form['id_provedor']
-        id_categoria= request.form['id_categoria']
+        fecha_caducidad= request.form['fecha_cad']
+        proveedor= request.form['proveedor']
+        categoria= request.form['categoria']
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO producto (nombre,precio,stock,descripcion,fecha_cad,id_provedor,id_categoria) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
-                    (nombre,precio,stock,descripcion,fecha_cad,id_provedor,id_categoria))
+        cur.execute("INSERT INTO productos (nombre,precio,stock,descripcion,fecha_caducidad, categoria, proveedor) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
+                    (nombre,precio,stock,descripcion, fecha_caducidad , categoria, proveedor))
         mysql.connection.commit()
         return redirect(url_for('productos'))
 
@@ -176,7 +262,7 @@ def insert_po():
 def delete_po(id_data):
     flash("Record Has Been Deleted Successfully")
     cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM producto WHERE id_producto=%s", (id_data,))
+    cur.execute("DELETE FROM productos WHERE id_producto=%s", (id_data,))
     mysql.connection.commit()
     return redirect(url_for('productos'))
 
@@ -187,12 +273,12 @@ def update_po():
         precio= request.form['precio']
         stock= request.form['stock']
         descripcion= request.form['descripcion']
-        fecha_cad= request.form['fecha_cad']
-        id_provedor= request.form['id_provedor']
-        id_categoria= request.form['id_categoria']
+        fecha_caducidad= request.form['fecha_cad']
+        proveedor= request.form['proveedor']
+        categoria= request.form['categoria']
         cur = mysql.connection.cursor()
-        cur.execute("UPDATE producto SET nombre=%s,precio=%s ,stock=%s ,descripcion=%s ,fecha_cad=%s ,id_provedor=%s ,id_categoria=%s WHERE id_producto=%s",
-                    (nombre,precio,stock,descripcion,fecha_cad,id_provedor,id_categoria,id_data,))
+        cur.execute("UPDATE productos SET nombre=%s,precio=%s ,stock=%s ,descripcion=%s ,fecha_caducidad=%s ,categoria=%s, proveedor=%s  WHERE id_producto=%s",
+                    (nombre,precio,stock,descripcion,fecha_caducidad,categoria,proveedor,id_data,))
         flash("Data Updated Successfully")
         mysql.connection.commit()
         return redirect(url_for('productos'))
@@ -330,7 +416,7 @@ def categoria():
 
         # Consultar la base de datos para obtener las categorías que coincidan con el término de búsqueda
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM categoria WHERE nombre LIKE %s", ('%' + search_term + '%',))
+        cur.execute("SELECT * FROM categorias WHERE nombre LIKE %s", ('%' + search_term + '%',))
         data = cur.fetchall()
         cur.close()
 
@@ -338,7 +424,7 @@ def categoria():
 
     # Si la solicitud es GET, mostrar todas las categorías sin filtrar
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM categoria")
+    cur.execute("SELECT * FROM categorias")
     data = cur.fetchall()
     cur.close()
 
@@ -351,7 +437,7 @@ def insert_cat():
         nombre= request.form['nombre']
         descripcion= request.form['descripcion']
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO  categoria (nombre ,descripcion) VALUES(%s,%s)",(nombre,descripcion))
+        cur.execute("INSERT INTO  categorias (nombre ,descripcion) VALUES(%s,%s)",(nombre,descripcion))
         mysql.connection.commit()
         return redirect(url_for('categoria'))
 
@@ -359,7 +445,7 @@ def insert_cat():
 def delete_cat(id_data):
     flash("Record Has Been Deleted Successfully")
     cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM categoria WHERE id_categoria=%s", (id_data,))
+    cur.execute("DELETE FROM categorias WHERE id_categoria=%s", (id_data,))
     mysql.connection.commit()
     return redirect(url_for('categoria'))
 
@@ -369,7 +455,7 @@ def update_cat():
         nombre= request.form['nombre']
         descripcion= request.form['descripcion']
         cur = mysql.connection.cursor()
-        cur.execute("UPDATE categoria SET nombre=%s ,descripcion=%s WHERE id_categoria=%s",
+        cur.execute("UPDATE categorias SET nombre=%s ,descripcion=%s WHERE id_categoria=%s",
                     (nombre,descripcion,id_data,))
         flash("Data Updated Successfully")
         mysql.connection.commit()
@@ -386,7 +472,7 @@ def add_product_to_cart():
         if _quantity and _code and request.method == 'POST':
 
             cur = mysql.connection.cursor()
-            cur.execute("SELECT id_producto, nombre, precio FROM producto WHERE id_producto = %s", (_code,))
+            cur.execute("SELECT id_producto, nombre, precio FROM productos WHERE id_producto = %s", (_code,))
             data = cur.fetchone()
 
             if not data:
@@ -459,7 +545,7 @@ def ventacar():
 
         # Consultar la base de datos para obtener los productos que coincidan con el término de búsqueda
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM producto WHERE nombre LIKE %s", ('%' + search_term + '%',))
+        cur.execute("SELECT * FROM productos WHERE nombre LIKE %s", ('%' + search_term + '%',))
         data = cur.fetchall()
         cur.close()
 
@@ -467,7 +553,7 @@ def ventacar():
 
     # Si la solicitud es GET, mostrar todos los productos sin filtrar
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM producto")
+    cur.execute("SELECT * FROM productos")
     data = cur.fetchall()
     cur.close()
 
@@ -518,14 +604,14 @@ def checkout():
 @app.route('/save_order', methods=['POST'])
 def save_order():
     try:
-        id_empleado = request.form['id_empleado']
+        nombre_empleado = request.form['nombre']
         fecha_venta = datetime.now().strftime('%Y-%m-%d')
         cantidad_prod = session['all_total_quantity']
         total = session['all_total_price']
 
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO venta (id_empleado, fecha_venta, cantidad_prod, total) VALUES (%s, %s, %s, %s)",
-            (id_empleado, fecha_venta, cantidad_prod, total))
+        cur.execute("INSERT INTO venta(fecha_venta, cantidad_prod, total, nombre_empleado) VALUES (%s, %s, %s, %s)",
+            (fecha_venta, cantidad_prod, total, nombre_empleado))
         mysql.connection.commit()
 
         # Obtener la información de los productos vendidos desde la sesión
@@ -534,7 +620,7 @@ def save_order():
         # Actualizar el stock de cada producto vendido en la tabla "producto"
         for product_id, product_info in products_sold.items():
             quantity_sold = product_info['quantity']
-            cur.execute("UPDATE producto SET stock = stock - %s WHERE id_producto = %s",
+            cur.execute("UPDATE productos SET stock = stock - %s WHERE id_producto = %s",
                         (quantity_sold, product_id))
             mysql.connection.commit()
 
@@ -542,7 +628,7 @@ def save_order():
         session.clear()
 
         return render_template('empleado/thank_you.html', 
-                               id_empleado=id_empleado,
+                               id_empleado=nombre_empleado,
                                fecha_venta=fecha_venta,
                                cantidad_prod=cantidad_prod,
                                total=total)
