@@ -49,8 +49,12 @@
     </nav>
     <h1>Administrador</h1>
     <h2>¿Qué reporte quieres solicitar?</h2>
-    
-    <div style="display: flex; justify-content:center;">
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div style="display: flex; justify-content: center;">
         <form action="{{ url_for('generar_pdf_productos') }}" method="GET">
             <button type="submit" class="pdf-button">Generar Reporte Productos</button>
         </form>
@@ -61,6 +65,7 @@
             <button type="submit" class="pdf-button pdf-button-generar">Generar Reporte Ventas</button>
         </form>
     </div>
+    
 
     <br>
     <footer>
