@@ -3,7 +3,7 @@ from flask_mysqldb import MySQL
 from flask_paginate import Pagination
 from datetime import datetime
 import mysql.connector
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import letter,landscape
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
@@ -43,9 +43,9 @@ def generar_pdf_productos():
     cur.execute("SELECT id_producto, nombre, precio, stock, descripcion, fecha_caducidad, categoria, proveedor FROM productos")
     productos_data = cur.fetchall()
     
-    # Crear un objeto PDF
+    # Crear un objeto PDF en orientación horizontal (landscape)
     pdf_buffer = BytesIO()
-    doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
+    doc = SimpleDocTemplate(pdf_buffer, pagesize=landscape(letter))
     
     # Contenido del PDF
     story = []
@@ -73,8 +73,6 @@ def generar_pdf_productos():
     # Regresar el archivo PDF como descarga
     pdf_buffer.seek(0)
     return Response(pdf_buffer, mimetype='application/pdf', headers={'Content-Disposition': 'attachment; filename=reporte_productos.pdf'})
-
-
 
 @app.route('/generar_pdf_ventas', methods=['POST'])
 def generar_pdf_ventas():
@@ -123,23 +121,28 @@ def login():
         # Obtener las credenciales ingresadas por el usuario
         nombre_usuario = request.form['nombre_usuario']
         contraseña = request.form['contraseña']
+        acepto_terminos = request.form.get('acepto_terminos')  # Verificar si se marcó la casilla
+
+        if acepto_terminos:
 
         # Consultar la base de datos para verificar las credenciales
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT id_empleado, nombre, contraseña, rol FROM empleados WHERE nombre = %s", (nombre_usuario,))
-        usuario = cur.fetchone()
-        cur.close()
+         cur = mysql.connection.cursor()
+         cur.execute("SELECT id_empleado, nombre, contraseña, rol FROM empleados WHERE nombre = %s", (nombre_usuario,))
+         usuario = cur.fetchone()
+         cur.close()
 
-        if usuario:
-            id_empleado, nombre, contraseña_db, rol = usuario
-            if contraseña == contraseña_db:
-                # Las credenciales son válidas, guardar el rol en la sesión
-                session['rol'] = rol
-                return redirect(url_for('dashboard'))
-            else:
-                flash('Contraseña incorrecta. Inténtalo de nuevo.', 'error')
+         if usuario:
+                id_empleado, nombre, contraseña_db, rol = usuario
+                if contraseña == contraseña_db:
+                    # Las credenciales son válidas, guardar el rol en la sesión
+                    session['rol'] = rol
+                    return redirect(url_for('dashboard'))
+                else:
+                    flash('Contraseña incorrecta. Inténtalo de nuevo.', 'error')
+         else:
+                flash('Usuario no encontrado. Inténtalo de nuevo.', 'error')
         else:
-            flash('Usuario no encontrado. Inténtalo de nuevo.', 'error')
+            flash('Debes aceptar los términos y condiciones para acceder.', 'error')
 
     return render_template('extras/login.html')
 
