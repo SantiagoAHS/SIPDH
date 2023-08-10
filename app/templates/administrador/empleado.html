@@ -38,6 +38,9 @@
             background-color: black;
             align-items: center;
             padding: 10px;
+            position:fixed;
+            bottom: 0;
+            width: 100%;
         }
         a {
             text-decoration: none;
@@ -87,7 +90,7 @@
         <h2 class="logo_nombre">Deposito Huerta</h2>
     </a>
     <nav>
-        <a href="" class="nav-link">Ayuda</a>
+        <a href="{{ url_for('extras.ayudaadmin')}}" class="nav-link">Ayuda</a>
     </nav>
 </header>
 

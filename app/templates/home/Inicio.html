@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/fijo.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fijo2.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style1.css')}}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -20,7 +20,7 @@
         <h2 class="logo_nombre">Deposito Huerta</h2>
         <nav>
             <a href="{{ url_for('login')}}" class="nav-link">I.Sesion</a>
-            <a href="" class="nav-link">Ayuda</a>
+            <a href="{{ url_for('extras.ayuda') }}" class="nav-link">Ayuda</a>
         </nav>
     </header>
   <div class="image-container1">

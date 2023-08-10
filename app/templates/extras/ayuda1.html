@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fijo2.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style1.css')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-family: 'Quicksand', sans-serif;
+        }
+        .pdf-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .pdf-button-generar {
+            background-color: #27ae60;
+        }
+    </style>
+    <title>admin</title>
+</head>
+<body>
+    <header>
+        <a href="{{ url_for('home.emp2') }}" class="Logo">
+            <img src="{{ url_for('static', filename='Logo_DH.png') }}" alt="Logo DH" class="LDH" class="logo-img" width="100px" >
+            <h2 class="logo_nombre">Deposito Huerta</h2>
+        </a>
+
+        <nav>
+            <a href="{{ url_for('extras.ayudageneral')}}" class="nav-link">Ayuda</a>
+        </nav>
+    </header>
+    <h1>AYUDA</h1>
+    <h2>¿tienes alguna duda?</h2>
+    <h2>puedes contactarnos con ayuda de lo siguienete</h2>
+    <section class="main-container">
+        <div class="cards-container">
+            <div class="contact-card">
+                <img src="{{ url_for('static', filename='T.png')}}" alt="" class="contacto">
+                <div class="contact-info">
+                    <div>
+                        <h3 style=color:black>Telefono.</h3>
+                        <p>Lun - Dom 09:00 - 20:00</p>
+                        <p style=color:blue>2471385294</p>   
+                  </div>
+                </div>
+            </div>
+            <div class="contact-card">
+                <img src="{{ url_for('static', filename='C.png')}}" alt="" class="contacto">
+                <div class="contact-info">
+                    <div>
+                        <h3 style=color:black>Correo.</h3>
+                        <p>Te responderemos lo antes posible.</p>
+                        <p style=color:blue>lionelsanti@gmail.com</p>  
+                  </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+    <br>
+    <footer>
+        <nav class="F2">
+            <a href="{{ url_for('extras.terminos')}}" class="nav-link" style="color: aliceblue;">Términos y Condiciones</a>
+            <a href="{{ url_for('extras.politicas')}}" class="nav-link" style="color: aliceblue;">Políticas de Privacidad</a>
+        </nav>
+    </footer>
+</body>
+</html>
