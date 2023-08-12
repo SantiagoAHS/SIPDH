@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session,make_response,abort
 from flask_mysqldb import MySQL
 from flask_paginate import Pagination
 from datetime import datetime
@@ -9,14 +9,21 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.styles import getSampleStyleSheet
 from io import BytesIO
 from flask import Response
+import os
+from werkzeug.utils import secure_filename
 
 
 from views.error_views import error_views
 from views.home_views import home_views
 from views.extra_views import extra_views
+
     
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'My Secret Key'
+
+# Configuración para cargar imágenes
+app.config['UPLOAD_FOLDER'] = os.path.abspath('app/static/uploads')
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -32,6 +39,8 @@ app.register_blueprint(extra_views)
 
 
 #extra
+# Función auxiliar para verificar las extensiones permitidas de archivo
+
 @app.route("/reporte")
 def reporte():
     return render_template('extras/reportes.html')
@@ -244,21 +253,66 @@ def productos():
 
     return render_template('administrador/productos.html', producto=data_page, pagination=pagination)
 
-@app.route('/insert_po', methods = ['POST'])
+# Función para verificar extensiones permitidas
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/insert_po', methods=['POST'])
 def insert_po():
     if request.method == "POST":
         flash("Data Inserted Successfully")
-        nombre= request.form['nombre']
-        precio= request.form['precio']
-        stock= request.form['stock']
-        descripcion= request.form['descripcion']
-        fecha_caducidad= request.form['fecha_cad']
-        proveedor= request.form['proveedor']
-        categoria= request.form['categoria']
-        cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO productos (nombre,precio,stock,descripcion,fecha_caducidad, categoria, proveedor) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
-                    (nombre,precio,stock,descripcion, fecha_caducidad , categoria, proveedor))
-        mysql.connection.commit()
+        nombre = request.form['nombre']
+        precio = request.form['precio']
+        stock = request.form['stock']
+        descripcion = request.form['descripcion']
+        fecha_caducidad = request.form['fecha_cad']
+        proveedor = request.form['proveedor']
+        categoria = request.form['categoria']
+
+        # Procesar la imagen cargada
+        if 'imagen' in request.files:
+            imagen = request.files['imagen']
+            if imagen.filename != '' and allowed_file(imagen.filename):
+                # Asegurarse de que el nombre del archivo sea único para evitar colisiones
+                filename = secure_filename(imagen.filename)
+                imagen_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                
+                # Crear el directorio de destino si no existe
+                os.makedirs(os.path.dirname(imagen_path), exist_ok=True)
+
+                imagen.save(imagen_path)
+                # Leer el contenido de la imagen para guardar en la base de datos
+                with open(imagen_path, 'rb') as img_file:
+                    imagen_blob = img_file.read()
+
+                # Depuración: Verificar si la imagen se carga correctamente
+                print("Imagen cargada:", imagen_path)
+            else:
+                imagen_blob = None
+                print("Imagen no cargada debido a la extensión no permitida.")
+        else:
+            imagen_blob = None
+            print("Imagen no proporcionada en el formulario.")
+
+        try:
+            # Obtener la conexión a la base de datos y el cursor
+            conn = mysql.connection
+            cursor = conn.cursor()
+
+            # Insertar el producto en la base de datos utilizando una transacción
+            cursor.execute("INSERT INTO productos (nombre, precio, stock, descripcion, fecha_caducidad, categoria, proveedor, imagen) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                           (nombre, precio, stock, descripcion, fecha_caducidad, categoria, proveedor, imagen_blob))
+            conn.commit()
+            flash("Data Inserted Successfully")
+        except mysql.connector.Error as err:
+            # Ocurrió un error, hacer rollback de la transacción
+            conn.rollback()
+            flash(f"Error: {err}")
+        finally:
+            # Cerrar el cursor (si está abierto) y la conexión
+            if cursor:
+                cursor.close()
+
         return redirect(url_for('productos'))
 
 @app.route('/delete_po/<string:id_data>', methods = ['GET'])
@@ -269,22 +323,53 @@ def delete_po(id_data):
     mysql.connection.commit()
     return redirect(url_for('productos'))
 
-@app.route('/update_po', methods= ['POST'])
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/update_po', methods=['POST'])
 def update_po():
-        id_data= request.form['id_producto']
-        nombre= request.form['nombre']
-        precio= request.form['precio']
-        stock= request.form['stock']
-        descripcion= request.form['descripcion']
-        fecha_caducidad= request.form['fecha_cad']
-        proveedor= request.form['proveedor']
-        categoria= request.form['categoria']
-        cur = mysql.connection.cursor()
-        cur.execute("UPDATE productos SET nombre=%s,precio=%s ,stock=%s ,descripcion=%s ,fecha_caducidad=%s ,categoria=%s, proveedor=%s  WHERE id_producto=%s",
-                    (nombre,precio,stock,descripcion,fecha_caducidad,categoria,proveedor,id_data,))
+    id_data = request.form['id_producto']
+    nombre = request.form['nombre']
+    precio = request.form['precio']
+    stock = request.form['stock']
+    descripcion = request.form['descripcion']
+    fecha_caducidad = request.form['fecha_cad']
+    proveedor = request.form['proveedor']
+    categoria = request.form['categoria']
+    
+    # Procesar la imagen actualizada
+    imagen_blob = None
+    if 'imagen' in request.files:
+        imagen = request.files['imagen']
+        if imagen.filename != '' and allowed_file(imagen.filename):
+            imagen_blob = imagen.read()
+
+            # Guardar la imagen en la carpeta especificada
+            imagen_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(imagen.filename))
+            imagen.save(imagen_path)
+
+    try:
+        # Obtener la conexión a la base de datos y el cursor
+        conn = mysql.connection
+        cursor = conn.cursor()
+
+        # Actualizar el producto en la base de datos utilizando una transacción
+        cursor.execute("UPDATE productos SET nombre=%s, precio=%s, stock=%s, descripcion=%s, fecha_caducidad=%s, categoria=%s, proveedor=%s, imagen=%s WHERE id_producto=%s",
+                       (nombre, precio, stock, descripcion, fecha_caducidad, categoria, proveedor, imagen_blob, id_data))
+        conn.commit()
         flash("Data Updated Successfully")
-        mysql.connection.commit()
-        return redirect(url_for('productos'))
+    except mysql.connector.Error as err:
+        # Ocurrió un error, hacer rollback de la transacción
+        conn.rollback()
+        flash(f"Error: {err}")
+    finally:
+        # Cerrar el cursor (si está abierto) y la conexión
+        if cursor:
+            cursor.close()
+
+    return redirect(url_for('productos'))
+
 
 #Empleados
 @app.route('/empleado', methods=['GET', 'POST'])
@@ -538,7 +623,33 @@ def add_product_to_cart():
     except Exception as e:
         return 'Error: ' + str(e)
 
-        
+@app.route('/get_image/<int:id_producto>')
+def get_image(id_producto):
+    try:
+        # Consultar la imagen del producto desde la base de datos
+        conn = mysql.connection
+        cursor = conn.cursor()
+        cursor.execute("SELECT imagen FROM productos WHERE id_producto = %s", (id_producto,))
+        data = cursor.fetchone()
+        cursor.close()
+
+        if data and data[0] is not None:
+            # Si se encontró la imagen en la base de datos, retornar la imagen como respuesta
+            response = make_response(data[0])
+            response.headers['Content-Type'] = 'image/jpeg'  # Ajusta el tipo de contenido según tu caso
+            return response
+        else:
+            # Si no se encontró la imagen, puedes devolver una imagen por defecto o mostrar un mensaje
+            # En este ejemplo, simplemente se devuelve una imagen por defecto de error
+            with open('path_to_default_image.jpg', 'rb') as img_file:
+                default_image = img_file.read()
+                response = make_response(default_image)
+                response.headers['Content-Type'] = 'image/jpeg'  # Ajusta el tipo de contenido según tu caso
+                return response
+    except mysql.connector.Error as err:
+        # Manejo de errores en caso de problemas con la base de datos
+        print(f"Error en la consulta de imagen: {err}")
+        return abort(500)  # Respuesta de error en caso de problemas con la base de datos
 
 @app.route('/ventacar', methods=['GET', 'POST'])
 def ventacar():

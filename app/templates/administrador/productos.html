@@ -147,48 +147,50 @@
                   
 
                 <div class="modal-body">
-                    
-                    <form action="{{ url_for('insert_po')}}" method="POST">
+                    <form action="{{ url_for('insert_po')}}" method="POST" enctype="multipart/form-data">
                         <div class="form-group">
-                          <label>NOMBRE</label>
-                          <input type="text" name="nombre" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA NOMBRE">
+                            <label>NOMBRE</label>
+                            <input type="text" name="nombre" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA NOMBRE">
                         </div>
-
+                    
                         <div class="form-group">
                             <label>PRECIO</label>
                             <input type="text" name="precio" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA PRECIO">
                         </div>
-
+                    
                         <div class="form-group">
                             <label>STOCK</label>
                             <input name="stock" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA CANTIDAD DE STOCK">
-                          </div>
-
+                        </div>
+                    
                         <div class="form-group">
                             <label>DESCRIPCION</label>
                             <input name="descripcion" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA DESCRIPCION">
-                          </div>
-
+                        </div>
+                    
                         <div class="form-group">
                             <label>FECHA DE CADOCIDAD</label>
                             <input name="fecha_cad" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA LA CADOCIDAD">
-                          </div>
-
+                        </div>
+                    
                         <div class="form-group">
-                            <label>PROVEDOR</label>
-                            <input name="proveedor" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA LA ID DEL PROVEDOR">
-                          </div>
-
+                            <label>PROVEEDOR</label>
+                            <input name="proveedor" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA LA ID DEL PROVEEDOR">
+                        </div>
+                    
                         <div class="form-group">
                             <label>CATEGORIA</label>
                             <input name="categoria" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA LA ID DE CATEGORIA">
-                          </div>
-
-                          <button type="submit" class="btn btn-primary mb-2">GUARDAR</button>
-                     
-                      </form>
-
-
+                        </div>
+                    
+                        <div class="form-group">
+                            <label>IMAGEN</label>
+                            <input type="file" name="imagen" accept="image/*">
+                        </div>
+                    
+                        <button type="submit" class="btn btn-primary mb-2">GUARDAR</button>
+                    </form>
+                    
                 </div>
             </div>
         </div>
@@ -210,8 +212,8 @@
             <th scope="col">STOCK</th>
             <th scope="col">DESCRIPCION</th>
             <th scope="col">FECHA_CAD</th>
-            <th scope="col">PROVEDOR</th>
             <th scope="col">CATEGORIA</th>
+            <th scope="col">PROVEDOR</th>
             <th scope="col">Accion</th>
         </tr>
     </thead>
@@ -249,7 +251,7 @@
     
                     <div class="modal-body">
                         
-                        <form action="{{ url_for('update_po')}}" method="POST">
+                        <form action="{{ url_for('update_po')}}" method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="id_producto" value="{{row.0}}">
                             <div class="form-group">
                                 <label>NOMBRE</label>
@@ -278,19 +280,21 @@
       
                               <div class="form-group">
                                   <label>PROVEDOR</label>
-                                  <input value="{{row.6}}" name="proveedor" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA LA ID DEL PROVEDOR">
+                                  <input value="{{row.7}}" name="proveedor" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA LA ID DEL PROVEDOR">
                                 </div>
       
                               <div class="form-group">
                                   <label>CATEGORIA</label>
-                                  <input value="{{row.7}}" name="categoria" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA LA ID DE CATEGORIA">
+                                  <input value="{{row.6}}" name="categoria" type="text" class="form-control" id="exampleFormControlInput1" placeholder="INGRESA LA ID DE CATEGORIA">
+                                </div>
+                                <div class="form-group">
+                                    <label>IMAGEN</label>
+                                    <input type="file" name="imagen" accept="image/*">
                                 </div>
     
                               <button type="submit" class="btn btn-success mb-2">ACTUALIZAR</button>
                          
                           </form>
-    
-    
                     </div>
                 </div>
             </div>
