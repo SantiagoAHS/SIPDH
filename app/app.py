@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session,make_response,abort
+from flask import Flask, render_template, request, redirect, url_for, flash, session,make_response,abort, send_from_directory,send_file
 from flask_mysqldb import MySQL
 from flask_paginate import Pagination
 from datetime import datetime
 import mysql.connector
+import bcrypt
 from reportlab.lib.pagesizes import letter,landscape
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
@@ -39,6 +40,15 @@ app.register_blueprint(extra_views)
 
 
 #extra
+@app.route('/descargar_manual', methods=['GET'])
+def descargar_manual():
+    # Define el nombre del archivo PDF
+    nombre_archivo = "ManualdeUsuario.pdf"
+    # Define la ruta completa al archivo PDF en la carpeta "static"
+    ruta_archivo = os.path.join(app.root_path, 'static', nombre_archivo)
+    # Retorna el archivo PDF como una descarga
+    return send_file(ruta_archivo, as_attachment=True)
+
 # Función auxiliar para verificar las extensiones permitidas de archivo
 
 @app.route("/reporte")
@@ -133,22 +143,22 @@ def login():
         acepto_terminos = request.form.get('acepto_terminos')  # Verificar si se marcó la casilla
 
         if acepto_terminos:
+            # Consultar la base de datos para verificar las credenciales
+            cur = mysql.connection.cursor()
+            cur.execute("SELECT id_empleado, nombre, contraseña, rol FROM empleados WHERE nombre = %s", (nombre_usuario,))
+            usuario = cur.fetchone()
+            cur.close()
 
-        # Consultar la base de datos para verificar las credenciales
-         cur = mysql.connection.cursor()
-         cur.execute("SELECT id_empleado, nombre, contraseña, rol FROM empleados WHERE nombre = %s", (nombre_usuario,))
-         usuario = cur.fetchone()
-         cur.close()
-
-         if usuario:
+            if usuario:
                 id_empleado, nombre, contraseña_db, rol = usuario
-                if contraseña == contraseña_db:
+                # Comparar la contraseña ingresada con la contraseña encriptada de la base de datos
+                if bcrypt.checkpw(contraseña.encode('utf-8'), contraseña_db.encode('utf-8')):
                     # Las credenciales son válidas, guardar el rol en la sesión
                     session['rol'] = rol
                     return redirect(url_for('dashboard'))
                 else:
                     flash('Contraseña incorrecta. Inténtalo de nuevo.', 'error')
-         else:
+            else:
                 flash('Usuario no encontrado. Inténtalo de nuevo.', 'error')
         else:
             flash('Debes aceptar los términos y condiciones para acceder.', 'error')
@@ -224,10 +234,27 @@ def productos():
     if request.method == 'POST':
         # Obtener el término de búsqueda ingresado por el usuario
         search_term = request.form['search_term']
+        fecha_caducidad = request.form['fecha_caducidad']
 
         # Consultar la base de datos para obtener los productos que coincidan con el término de búsqueda
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM productos WHERE nombre LIKE %s", ('%' + search_term + '%',))
+        query = "SELECT * FROM productos WHERE 1"
+        params = []
+
+        if search_term:
+            query += " AND nombre LIKE %s"
+            params.append('%' + search_term + '%')
+
+        if fecha_caducidad:
+            # Verificar si la fecha ingresada es válida y convertirla a formato MySQL
+            try:
+                fecha_caducidad = datetime.strptime(fecha_caducidad, '%Y-%m-%d').date()
+                query += " AND fecha_caducidad = %s"
+                params.append(fecha_caducidad)
+            except ValueError:
+                flash('Fecha de caducidad inválida. Formato esperado: YYYY-MM-DD', 'error')
+
+        cur.execute(query, params)
         data = cur.fetchall()
         cur.close()
 
@@ -237,7 +264,7 @@ def productos():
         data_page = data[(page-1)*per_page:page*per_page]
         pagination = Pagination(page=page, per_page=per_page, total=len(data), css_framework='bootstrap4')
 
-        return render_template('administrador/productos.html', producto=data_page, pagination=pagination, search_term=search_term)
+        return render_template('administrador/productos.html', producto=data_page, pagination=pagination, search_term=search_term, search_fecha_caducidad=fecha_caducidad)
 
     # Si la solicitud es GET, mostrar todos los productos sin filtrar
     cur = mysql.connection.cursor()
@@ -394,20 +421,30 @@ def empleado():
 
     return render_template('administrador/empleado.html', empleado=data)
 
-@app.route('/insert_e', methods = ['POST'])
+# Función para encriptar una contraseña
+def encrypt_password(password):
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password
+
+@app.route('/insert_e', methods=['POST'])
 def insert_e():
     if request.method == "POST":
         flash("Data Inserted Successfully")
-        nombre= request.form['nombre']
-        telefono= request.form['telefono']
-        correo= request.form['correo']
-        direccion= request.form['direccion']
-        curp= request.form['curp']
-        contraseña= request.form['contraseña']
-        rol=request.form['rol']
+        nombre = request.form['nombre']
+        telefono = request.form['telefono']
+        correo = request.form['correo']
+        direccion = request.form['direccion']
+        curp = request.form['curp']
+        raw_password = request.form['contraseña']  # Contraseña en texto plano
+
+        # Encriptar la contraseña antes de almacenarla en la base de datos
+        hashed_password = encrypt_password(raw_password)
+
+        rol = request.form['rol']
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO empleados (nombre,telefono,correo,direccion,curp,contraseña,rol) VALUES (%s, %s, %s, %s, %s, %s,%s)", 
-                    (nombre,telefono,correo,direccion,curp,contraseña,rol))
+        cur.execute("INSERT INTO empleados (nombre, telefono, correo, direccion, curp, contraseña, rol) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                    (nombre, telefono, correo, direccion, curp, hashed_password, rol))
         mysql.connection.commit()
         return redirect(url_for('empleado'))
 
@@ -419,19 +456,30 @@ def delete_e(id_data):
     mysql.connection.commit()
     return redirect(url_for('empleado'))
 
-@app.route('/update_e', methods= ['POST'])
+# Función para encriptar una contraseña
+def encrypt_password(password):
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password
+
+@app.route('/update_e', methods=['POST'])
 def update_e():
-        id_data= request.form['id_empleado']
-        nombre= request.form['nombre']
-        telefono= request.form['telefono']
-        correo= request.form['correo']
-        direccion= request.form['direccion']
-        curp= request.form['curp']
-        contraseña= request.form['contraseña']
-        rol=request.form['rol']
+    if request.method == 'POST':
+        id_data = request.form['id_empleado']
+        nombre = request.form['nombre']
+        telefono = request.form['telefono']
+        correo = request.form['correo']
+        direccion = request.form['direccion']
+        curp = request.form['curp']
+        raw_password = request.form['contraseña']  # Contraseña en texto plano
+
+        # Encriptar la contraseña antes de actualizar el registro
+        hashed_password = encrypt_password(raw_password)
+
+        rol = request.form['rol']
         cur = mysql.connection.cursor()
-        cur.execute("UPDATE empleados SET nombre=%s,telefono=%s ,correo=%s,direccion=%s ,curp=%s ,contraseña=%s, rol=%s WHERE id_empleado=%s",
-                    (nombre,telefono,correo,direccion,curp,contraseña,rol,id_data,))
+        cur.execute("UPDATE empleados SET nombre=%s, telefono=%s, correo=%s, direccion=%s, curp=%s, contraseña=%s, rol=%s WHERE id_empleado=%s",
+                    (nombre, telefono, correo, direccion, curp, hashed_password, rol, id_data,))
         flash("Data Updated Successfully")
         mysql.connection.commit()
         return redirect(url_for('empleado'))

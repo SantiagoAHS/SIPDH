@@ -16,13 +16,22 @@
             color: white;
             border: none;
             padding: 10px 20px;
-            font-size: 14px;
+            font-size: 16px;
             cursor: pointer;
             border-radius: 5px;
+            margin-top: 10px;
         }
-
+        
         .pdf-button-generar {
             background-color: #27ae60;
+        }
+        
+        .pdf-button:hover {
+            background-color: #217dbb;
+        }
+        
+        .pdf-button:active {
+            background-color: #1d6aad;
         }
     </style>
     <title>admin</title>
@@ -39,8 +48,17 @@
         </nav>
     </header>
     <h1>AYUDA</h1>
+    <button onclick="descargarPDF()" class="pdf-button pdf-button-generar" style="float: right; margin-top: 30px;">Descargar manual de uso</button>
     <h2>¿tienes alguna duda?</h2>
-    <h2>puedes contactarnos con ayuda de lo siguienete</h2>
+    <h2>puedes contactarnos con ayuda de lo siguiente</h2>
+    <!-- Agrega esto dentro del cuerpo de tu HTML -->
+    <!-- Agrega este script JavaScript al final del cuerpo de tu HTML -->
+<script>
+    function descargarPDF() {
+        // Redirige a la ruta en tu aplicación Flask que genera el PDF
+        window.location.href = "{{ url_for('descargar_manual') }}";
+    }
+</script>
     <section class="main-container">
         <div class="cards-container">
             <div class="contact-card">

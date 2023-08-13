@@ -4,3 +4,4 @@ flask-wtf
 reportlab
 Flask-MySQL
 flask-paginate
+bcrypt
