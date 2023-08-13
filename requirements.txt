@@ -5,3 +5,4 @@ reportlab
 Flask-MySQL
 flask-paginate
 bcrypt
+flask-mysqldb
