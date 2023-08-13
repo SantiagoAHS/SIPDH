@@ -3,45 +3,161 @@
 <head>
     <title>Agradecimiento por tu venta</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            font-family: 'Quicksand', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            text-align: center;
         }
-        .text-center {
+    
+        .animation-container {
             position: absolute;
-            width: 90%; 
-            height: auto; 
-            background-color: white; 
-            border: 1px solid #ccc; 
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+    
+        .animation-text {
+            position: absolute;
+            white-space: nowrap;
+            font-size: 30px;
+            font-weight: bold;
+            animation: move 10s linear infinite;
+        }
+    
+        @keyframes move {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+    
+        .content {
+            position: relative;
             z-index: 1;
-
-          }
-          p{
-            color: #000;
-          }
-      </style>
+            background-color: #fffcda; /* Color de fondo para resaltar */
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 10px; /* Esquinas redondeadas */
+        }
+    
+        .additional-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            bottom: 10px;
+        }
+    
+        .beer-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: #FFD700; /* Color de la cerveza */
+            overflow: hidden;
+            z-index: -1;
+        }
+    
+        .foam {
+            position: absolute;
+            width: 100%;
+            height: 40%;
+            top: 0;
+            left: 0;
+            background-color: rgba(255, 255, 255, 0.6); /* Color de la espuma */
+            animation: foamWave 5s linear infinite;
+        }
+    
+        @keyframes foamWave {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5%);
+            }
+        }
+    
+        .ice {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #d3e8ff; /* Color de los hielos */
+            border-radius: 50%;
+            animation: iceFall 6s linear infinite, iceMove 3s linear infinite;
+        }
+    
+        .ice::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #d3e8ff; /* Color de los hielos */
+            border-radius: 50%;
+            animation: iceGlow 2s linear infinite alternate;
+        }
+    
+        @keyframes iceFall {
+            0% {
+                top: -20px;
+                opacity: 0.8;
+            }
+            100% {
+                top: 100%;
+                opacity: 0.2;
+            }
+        }
+    
+        @keyframes iceMove {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(15px);
+            }
+        }
+    
+        @keyframes iceGlow {
+            0% {
+                opacity: 0.2;
+            }
+            100% {
+                opacity: 0.8;
+            }
+        }
+    </style>
 </head>
-<body style="background-color: #f8f9fa;">
-    <div class="container mt-5">
+<body>
+    <div class="animation-container">
+        <div class="ice"></div>
+    </div>
+    <div class="beer-container">
+        <div class="foam"></div>
+        <!-- Burbujas de cerveza -->
+    </div>
+    <div class="container mt-5 content center-content">
         <div class="row">
-            <div class="col-md-12">
-                <div class="text-center mt-5">
-                    <h2 class="display-4">Agradecimiento por tu venta</h2>
-                    <p class="font-weight-bold">La orden de compra ha sido procesada exitosamente.</p>
-                    <p class="font-weight-bold">Gracias por tu preferencia.</p>
-                    <p class="font-weight-bold">Número de orden: {{ id_venta }}</p>
-                    <p class="font-weight-bold">Fecha de la orden: {{ fecha_venta }}</p>
-                    <p class="font-weight-bold">Nombre del empleado: {{ id_empleado }}</p>
-                    <p class="font-weight-bold">Total cantidad: {{ cantidad_prod }}</p>
-                    <p class="font-weight-bold">Total precio: ${{ total }}</p>
-                    <a href="{{ url_for('.ventacar') }}" class="btn btn-primary btn-lg">Back to Cart</a>
-                </div>
+            <div class="col-md-12 centered-content">
+                <h2 class="display-4" style="color: #333;">Agradecimiento por tu venta</h2>
+                <p class="font-weight-bold" style="color: #555;">La orden de compra ha sido procesada exitosamente.</p>
+                <p class="font-weight-bold" style="color: #555;">Gracias.</p>
+                <p class="font-weight-bold" style="color: #555;">Fecha de la orden: {{ fecha_venta }}</p>
+                <p class="font-weight-bold" style="color: #555;">Nombre del empleado: {{ id_empleado }}</p>
+                <p class="font-weight-bold" style="color: #555;">Total cantidad: {{ cantidad_prod }}</p>
+                <p class="font-weight-bold" style="color: #555;">Total precio: ${{ total }}</p>
+                <a href="{{ url_for('.ventacar') }}" class="btn btn-primary btn-lg">Volver al carrito</a>
             </div>
         </div>
     </div>
