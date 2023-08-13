@@ -287,7 +287,7 @@ def allowed_file(filename):
 @app.route('/insert_po', methods=['POST'])
 def insert_po():
     if request.method == "POST":
-        flash("Data Inserted Successfully")
+        flash("Nuevo registro agregado con éxito")
         nombre = request.form['nombre']
         precio = request.form['precio']
         stock = request.form['stock']
@@ -330,7 +330,7 @@ def insert_po():
             cursor.execute("INSERT INTO productos (nombre, precio, stock, descripcion, fecha_caducidad, categoria, proveedor, imagen) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
                            (nombre, precio, stock, descripcion, fecha_caducidad, categoria, proveedor, imagen_blob))
             conn.commit()
-            flash("Data Inserted Successfully")
+            flash("Nuevo registro agregado con éxito")
         except mysql.connector.Error as err:
             # Ocurrió un error, hacer rollback de la transacción
             conn.rollback()
@@ -344,7 +344,7 @@ def insert_po():
 
 @app.route('/delete_po/<string:id_data>', methods = ['GET'])
 def delete_po(id_data):
-    flash("Record Has Been Deleted Successfully")
+    flash("El registro ha sido eliminado exitosamente")
     cur = mysql.connection.cursor()
     cur.execute("DELETE FROM productos WHERE id_producto=%s", (id_data,))
     mysql.connection.commit()
@@ -385,7 +385,7 @@ def update_po():
         cursor.execute("UPDATE productos SET nombre=%s, precio=%s, stock=%s, descripcion=%s, fecha_caducidad=%s, categoria=%s, proveedor=%s, imagen=%s WHERE id_producto=%s",
                        (nombre, precio, stock, descripcion, fecha_caducidad, categoria, proveedor, imagen_blob, id_data))
         conn.commit()
-        flash("Data Updated Successfully")
+        flash("Nuevo registro actualizado con éxito")
     except mysql.connector.Error as err:
         # Ocurrió un error, hacer rollback de la transacción
         conn.rollback()
@@ -430,7 +430,7 @@ def encrypt_password(password):
 @app.route('/insert_e', methods=['POST'])
 def insert_e():
     if request.method == "POST":
-        flash("Data Inserted Successfully")
+        flash("Nuevo registro agregado con éxito")
         nombre = request.form['nombre']
         telefono = request.form['telefono']
         correo = request.form['correo']
@@ -450,7 +450,7 @@ def insert_e():
 
 @app.route('/delete_e/<string:id_data>', methods = ['GET'])
 def delete_e(id_data):
-    flash("Record Has Been Deleted Successfully")
+    flash("El registro ha sido eliminado exitosamente")
     cur = mysql.connection.cursor()
     cur.execute("DELETE FROM empleados WHERE id_empleado=%s", (id_data,))
     mysql.connection.commit()
@@ -480,7 +480,7 @@ def update_e():
         cur = mysql.connection.cursor()
         cur.execute("UPDATE empleados SET nombre=%s, telefono=%s, correo=%s, direccion=%s, curp=%s, contraseña=%s, rol=%s WHERE id_empleado=%s",
                     (nombre, telefono, correo, direccion, curp, hashed_password, rol, id_data,))
-        flash("Data Updated Successfully")
+        flash("Nuevo registro actualizado con éxito")
         mysql.connection.commit()
         return redirect(url_for('empleado'))
 
@@ -510,7 +510,7 @@ def provedor():
 @app.route('/insert_pe', methods = ['POST'])
 def insert_pe():
     if request.method == "POST":
-        flash("Data Inserted Successfully")
+        flash("Nuevo registro agregado con éxito")
         nombre= request.form['nombre']
         direccion= request.form['direccion']
         telefono= request.form['telefono']
@@ -523,7 +523,7 @@ def insert_pe():
 
 @app.route('/delete_pe/<string:id_data>', methods = ['GET'])
 def delete_pe(id_data):
-    flash("Record Has Been Deleted Successfully")
+    flash("El registro ha sido eliminado exitosamente")
     cur = mysql.connection.cursor()
     cur.execute("DELETE FROM proveedores WHERE id_proveedor=%s", (id_data,))
     mysql.connection.commit()
@@ -539,7 +539,7 @@ def update_pe():
     cur = mysql.connection.cursor()
     cur.execute("UPDATE proveedores SET nombre=%s, direccion=%s, telefono=%s, correo=%s WHERE id_proveedor=%s",
                 (nombre, direccion, telefono, correo, id_data,))
-    flash("Data Updated Successfully")
+    flash("Nuevo registro actualizado con éxito")
     mysql.connection.commit()
     return redirect(url_for('provedor'))
 
@@ -569,7 +569,7 @@ def categoria():
 @app.route('/insert_cat', methods = ['POST'])
 def insert_cat():
     if request.method == "POST":
-        flash("Data Inserted Successfully")
+        flash("Nuevo registro agregado con éxito")
         nombre= request.form['nombre']
         descripcion= request.form['descripcion']
         cur = mysql.connection.cursor()
@@ -579,7 +579,7 @@ def insert_cat():
 
 @app.route('/delete_cat/<string:id_data>', methods = ['GET'])
 def delete_cat(id_data):
-    flash("Record Has Been Deleted Successfully")
+    flash("El registro ha sido eliminado exitosamente")
     cur = mysql.connection.cursor()
     cur.execute("DELETE FROM categorias WHERE id_categoria=%s", (id_data,))
     mysql.connection.commit()
@@ -593,7 +593,7 @@ def update_cat():
         cur = mysql.connection.cursor()
         cur.execute("UPDATE categorias SET nombre=%s ,descripcion=%s WHERE id_categoria=%s",
                     (nombre,descripcion,id_data,))
-        flash("Data Updated Successfully")
+        flash("Nuevo registro actualizado con éxito")
         mysql.connection.commit()
         return redirect(url_for('categoria'))
 
