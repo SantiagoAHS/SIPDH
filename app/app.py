@@ -40,6 +40,8 @@ app.register_blueprint(extra_views)
 
 
 #extra
+
+
 @app.route('/descargar_manual', methods=['GET'])
 def descargar_manual():
     # Define el nombre del archivo PDF
@@ -51,11 +53,11 @@ def descargar_manual():
 
 # Función auxiliar para verificar las extensiones permitidas de archivo
 
-@app.route("/reporte")
+@app.route("/reporte/")
 def reporte():
     return render_template('extras/reportes.html')
 
-@app.route('/generar_pdf_productos', methods=['GET'])
+@app.route('/generar_pdf_productos/', methods=['GET'])
 def generar_pdf_productos():
     # Consulta a la base de datos para obtener los datos de productos
     cur = mysql.connection.cursor()
@@ -93,7 +95,7 @@ def generar_pdf_productos():
     pdf_buffer.seek(0)
     return Response(pdf_buffer, mimetype='application/pdf', headers={'Content-Disposition': 'attachment; filename=reporte_productos.pdf'})
 
-@app.route('/generar_pdf_ventas', methods=['POST'])
+@app.route('/generar_pdf_ventas/', methods=['POST'])
 def generar_pdf_ventas():
     fecha_inicio = request.form.get('fecha_inicio')
 
@@ -134,7 +136,7 @@ def generar_pdf_ventas():
     pdf_buffer.seek(0)
     return Response(pdf_buffer, mimetype='application/pdf', headers={'Content-Disposition': 'attachment; filename=reporte_ventas.pdf'})
 #login
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         # Obtener las credenciales ingresadas por el usuario
@@ -165,7 +167,7 @@ def login():
 
     return render_template('extras/login.html')
 
-@app.route('/dashboard')
+@app.route('/dashboard/')
 def dashboard():
     # Verificar si el usuario ha iniciado sesión y tiene un rol asignado
     if 'rol' in session:
@@ -180,14 +182,14 @@ def dashboard():
         # Si el usuario no ha iniciado sesión, redirigir al inicio de sesión
         return redirect(url_for('login'))
 
-@app.route('/logout')
+@app.route('/logout/')
 def logout():
     # Eliminar la sesión activa y redireccionar al inicio de sesión
     session.clear()
     return render_template('home/inicio.html')
 
 #Venta
-@app.route('/registrosventa', methods=['GET', 'POST'])
+@app.route('/registrosventa/', methods=['GET', 'POST'])
 def registrosventa():
     if request.method == 'POST':
         # Obtener la fecha ingresada por el usuario en el formulario de búsqueda
@@ -229,7 +231,7 @@ def registrosventa():
     return render_template('empleado/registroventa.html', venta=data_page, pagination=pagination)
 
 #Productos
-@app.route('/productos', methods=['GET', 'POST'])
+@app.route('/productos/', methods=['GET', 'POST'])
 def productos():
     if request.method == 'POST':
         # Obtener el término de búsqueda ingresado por el usuario
@@ -284,7 +286,7 @@ def productos():
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-@app.route('/insert_po', methods=['POST'])
+@app.route('/insert_po/', methods=['POST'])
 def insert_po():
     if request.method == "POST":
         flash("Nuevo registro agregado con éxito")
@@ -354,7 +356,7 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-@app.route('/update_po', methods=['POST'])
+@app.route('/update_po/', methods=['POST'])
 def update_po():
     id_data = request.form['id_producto']
     nombre = request.form['nombre']
@@ -399,7 +401,7 @@ def update_po():
 
 
 #Empleados
-@app.route('/empleado', methods=['GET', 'POST'])
+@app.route('/empleado/', methods=['GET', 'POST'])
 def empleado():
     if request.method == 'POST':
         # Obtener el término de búsqueda ingresado por el usuario
@@ -427,7 +429,7 @@ def encrypt_password(password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed_password
 
-@app.route('/insert_e', methods=['POST'])
+@app.route('/insert_e/', methods=['POST'])
 def insert_e():
     if request.method == "POST":
         flash("Nuevo registro agregado con éxito")
@@ -462,7 +464,7 @@ def encrypt_password(password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed_password
 
-@app.route('/update_e', methods=['POST'])
+@app.route('/update_e/', methods=['POST'])
 def update_e():
     if request.method == 'POST':
         id_data = request.form['id_empleado']
@@ -485,7 +487,7 @@ def update_e():
         return redirect(url_for('empleado'))
 
 #Provedores
-@app.route('/provedor', methods=['GET', 'POST'])
+@app.route('/provedor/', methods=['GET', 'POST'])
 def provedor():
     if request.method == 'POST':
         # Obtener el término de búsqueda ingresado por el usuario
@@ -507,7 +509,7 @@ def provedor():
 
     return render_template('administrador/provedor.html', provedor=data)
 
-@app.route('/insert_pe', methods = ['POST'])
+@app.route('/insert_pe/', methods = ['POST'])
 def insert_pe():
     if request.method == "POST":
         flash("Nuevo registro agregado con éxito")
@@ -529,7 +531,7 @@ def delete_pe(id_data):
     mysql.connection.commit()
     return redirect(url_for('provedor'))
 
-@app.route('/update_pe', methods=['POST'])
+@app.route('/update_pe/', methods=['POST'])
 def update_pe():
     id_data = request.form['id_proveedor']
     nombre = request.form['nombre']
@@ -544,7 +546,7 @@ def update_pe():
     return redirect(url_for('provedor'))
 
 #Categoria
-@app.route('/categoria', methods=['GET', 'POST'])
+@app.route('/categoria/', methods=['GET', 'POST'])
 def categoria():
     if request.method == 'POST':
         # Obtener el término de búsqueda ingresado por el usuario
@@ -566,7 +568,7 @@ def categoria():
 
     return render_template('administrador/categorias.html', categoria=data)
 
-@app.route('/insert_cat', methods = ['POST'])
+@app.route('/insert_cat/', methods = ['POST'])
 def insert_cat():
     if request.method == "POST":
         flash("Nuevo registro agregado con éxito")
@@ -585,7 +587,7 @@ def delete_cat(id_data):
     mysql.connection.commit()
     return redirect(url_for('categoria'))
 
-@app.route('/update_cat', methods= ['POST'])
+@app.route('/update_cat/', methods= ['POST'])
 def update_cat():
         id_data= request.form['id_categoria']
         nombre= request.form['nombre']
@@ -598,7 +600,7 @@ def update_cat():
         return redirect(url_for('categoria'))
 
 #Venta
-@app.route('/add', methods=['POST'])
+@app.route('/add/', methods=['POST'])
 def add_product_to_cart():
     try:
         _quantity = int(request.form['quantity'])
@@ -699,7 +701,7 @@ def get_image(id_producto):
         print(f"Error en la consulta de imagen: {err}")
         return abort(500)  # Respuesta de error en caso de problemas con la base de datos
 
-@app.route('/ventacar', methods=['GET', 'POST'])
+@app.route('/ventacar/', methods=['GET', 'POST'])
 def ventacar():
     if request.method == 'POST':
         # Obtener el término de búsqueda ingresado por el usuario
@@ -721,7 +723,7 @@ def ventacar():
 
     return render_template('empleado/ventacar.html', producto=data)
  
-@app.route('/empty')
+@app.route('/empty/')
 def empty_cart():
  try:
   session.clear()
@@ -758,12 +760,12 @@ def delete_pre(code):
   print(e)
 
 #Checkout
-@app.route('/checkout', methods=['GET'])
+@app.route('/checkout/', methods=['GET'])
 def checkout():
     return render_template('empleado/checkout.html', cart=session['cart_item'], total_quantity=session['all_total_quantity'], total_price=session['all_total_price'])
 
 
-@app.route('/save_order', methods=['POST'])
+@app.route('/save_order/', methods=['POST'])
 def save_order():
     try:
         nombre_empleado = request.form['nombre']
@@ -799,7 +801,7 @@ def save_order():
         print(e)
         return "Error al guardar la orden. Inténtalo de nuevo."
    
-@app.route('/thank_you')
+@app.route('/thank_you/')
 def thank_you():
     # Aquí puedes mostrar un mensaje de agradecimiento o confirmación de la compra después de que se haya procesado la venta
     return render_template('empleado/thank_you.html')

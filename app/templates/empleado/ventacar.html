@@ -107,8 +107,13 @@
                         <div class="single-publication">
                             <figure style="width:263px;">
                                 <a href="#">
-                                    <img src="{{ url_for('static', filename='new.png') }}">
+                                    {% if row.8 is none %}
+                                    <img src="{{ url_for('static', filename='new.png') }}" alt="Imagen por Defecto">
+                                    {% else %}
+                                    <img src="{{ url_for('get_image', id_producto=row.0) }}" alt="Producto Imagen">
+                                    {% endif %}
                                 </a>
+                                <ul>
                             </figure>
  
                             <div class="publication-content">
