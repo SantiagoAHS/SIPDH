@@ -40,7 +40,10 @@ app.register_blueprint(extra_views)
 
 
 #extra
-
+@app.route("/")
+@app.route("/inicio/")
+def inicio():
+    return render_template('home/inicio.html')
 
 @app.route('/descargar_manual', methods=['GET'])
 def descargar_manual():
